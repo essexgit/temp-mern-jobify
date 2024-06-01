@@ -11,10 +11,10 @@ const allJobsQuery = (params) => {
     queryKey: [
       "jobs",
       search ?? "",
-      jobStatus ?? all,
+      jobStatus ?? "all",
       jobType ?? "all",
       sort ?? "newest",
-      page ?? "1",
+      page ?? 1,
     ],
     queryFn: async () => {
       const { data } = await customFetch.get("/jobs", {
