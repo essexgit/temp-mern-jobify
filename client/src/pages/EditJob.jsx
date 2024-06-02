@@ -16,7 +16,7 @@ export const loader = async ({ params }) => {
   }
 };
 export const action =
-  () =>
+  (queryClient) =>
   async ({ request, params }) => {
     const formData = await request.formData();
     const data = Object.fromEntries(formData);
@@ -29,7 +29,6 @@ export const action =
       toast.error(error?.response?.data?.msg);
       return error;
     }
-    return null;
   };
 const EditJob = () => {
   const { job } = useLoaderData();
@@ -39,7 +38,12 @@ const EditJob = () => {
       <Form method="post" className="form">
         <h4 className="form-title">edit job</h4>
         <div className="form-center">
-          <FormRow type="text" name="position" defaultValue={job.position} />
+          <FormRow
+            type="text"
+            name="position"
+            auto
+            defaultValue={job.position}
+          />
           <FormRow type="text" name="company" defaultValue={job.company} />
           <FormRow
             type="text"
