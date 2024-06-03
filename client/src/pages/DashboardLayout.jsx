@@ -7,12 +7,12 @@ import {
 } from "react-router-dom";
 import Wrapper from "../assets/wrappers/Dashboard";
 import { BigSidebar, Loading, Navbar, SmallSidebar } from "../components";
-import { createContext, useState } from "react";
-import { useContext } from "react";
+import { createContext, useState, useEffect, useContext } from "react";
 import { checkDefaultTheme } from "../App";
 import customFetch from "../utils/customFetch";
 import { toast } from "react-toastify";
 import { useQuery } from "@tanstack/react-query";
+// import { response } from "express"; // autocomplete entered this and it crashed the App - response is Axios not express
 
 const userQuery = {
   queryKey: ["user"],
@@ -39,6 +39,7 @@ const DashboardLayout = ({ queryClient }) => {
   const isPageLoading = navigation.state === "loading";
   const [showSidebar, setShowSidebar] = useState(false);
   const [isDarkTheme, setIsDarkTheme] = useState(checkDefaultTheme());
+  const [isAuthError, setIsAuthError] = useState(false);
 
   const toggleDarkTheme = () => {
     const newDarkTheme = !isDarkTheme;
@@ -55,6 +56,22 @@ const DashboardLayout = ({ queryClient }) => {
     queryClient.invalidateQueries();
     toast.success("Logging out...");
   };
+
+  customFetch.interceptors.response.use(
+    (response) => {
+      return response;
+    },
+    (error) => {
+      if (error?.response?.status === 401) {
+        setIsAuthError(true);
+      }
+      return Promise.reject(error);
+    }
+  );
+  useEffect(() => {
+    if (!isAuthError) return;
+    logoutUser();
+  }, [isAuthError]);
   return (
     <DashboardContext.Provider
       value={{
